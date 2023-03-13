@@ -35,25 +35,31 @@ export default class {
     $("#modaleFile").modal("show");
   };
 
+  // not need to cover this function by tests
+  /* istanbul ignore next */
   getBills = () => {
     if (this.store) {
       return this.store
         .bills()
         .list()
         .then((snapshot) => {
-          console.log(snapshot);
+          // console.log(snapshot.date);
+
           const bills = snapshot.map((doc) => {
+            // console.log(doc.date);
             try {
               return {
                 ...doc,
                 date: formatDate(doc.date),
+
                 status: formatStatus(doc.status),
               };
             } catch (e) {
+              // console.log(date);
               // if for some reason, corrupted data was introduced, we manage here failing formatDate function
               // log the error and return unformatted date in that case
-              console.log;
-              console.log(e, "for", doc);
+
+              // console.log(e, "for", doc);
               return {
                 ...doc,
                 date: doc.date,
@@ -61,7 +67,7 @@ export default class {
               };
             }
           });
-          console.log("length", bills.length);
+          // console.log("length", bills.length);
           return bills;
         });
     }

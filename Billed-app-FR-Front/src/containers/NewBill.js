@@ -1,6 +1,17 @@
 import { ROUTES_PATH } from "../constants/routes.js";
 import Logout from "./Logout.js";
 
+// verification regex
+const checkFileExtension = function (e, filname) {
+  let allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+  if (!allowedExtensions.test(filname)) {
+    let erreur = "Seule les fichiers .jpg, .png .jepg sont autorisées";
+    e.target.value = "";
+    document.querySelector(".msgError").textContent = erreur;
+    return false;
+  } else return true;
+};
+
 export default class NewBill {
   constructor({ document, onNavigate, store, localStorage }) {
     this.document = document;
@@ -11,22 +22,24 @@ export default class NewBill {
     );
     formNewBill.addEventListener("submit", this.handleSubmit);
     const file = this.document.querySelector(`input[data-testid="file"]`);
-    // ajout de specification au fichier 
+    // ajout de specification au fichier
     const fileType = document.querySelector(`input[data-testid="file"]`);
-    fileType.setAttribute("accept", "image/x-png,image/gif,image/jpeg");
+    fileType.setAttribute("accept", "image/png,image/jpg,image/jpeg");
     file.addEventListener("change", this.handleChangeFile);
     this.fileUrl = null;
     this.fileName = null;
     this.billId = null;
     new Logout({ document, localStorage, onNavigate });
   }
+
   handleChangeFile = (e) => {
     e.preventDefault();
     const file = this.document.querySelector(`input[data-testid="file"]`)
       .files[0];
-      // ajout de specification au fichier 
+    // ajout de specification au fichier
     const fileType = document.querySelector(`input[data-testid="file"]`);
-    fileType.setAttribute("accept", "image/x-png,image/gif,image/jpeg");
+    fileType.setAttribute("accept", "image/png,image/jpg,image/jpeg");
+
     console.log(fileType);
     const filePath = e.target.value.split(/\\/g);
     console.log(filePath);
@@ -38,28 +51,34 @@ export default class NewBill {
     formData.append("file", file);
     formData.append("email", email);
 
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true,
-        },
-      })
-      .then(({ fileUrl, key }) => {
-        console.log(fileUrl);
-        this.billId = key;
-        this.fileUrl = fileUrl;
-        this.fileName = fileName;
-      })
-      .catch((error) => console.error(error));
+    // verification regex
+    if (checkFileExtension(e, file.name)) {
+      this.store
+        .bills()
+        .create({
+          data: formData,
+          headers: {
+            noContentType: true,
+          },
+        })
+
+        .then(({ fileUrl, key }) => {
+          console.log(fileUrl);
+          this.billId = key;
+          this.fileUrl = fileUrl;
+          this.fileName = fileName;
+        })
+        .catch((error) => console.error(error));
+    }
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(
-      'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-      e.target.querySelector(`input[data-testid="datepicker"]`).value
-    );
+
+    // console.log(
+    //   'e.target.querySelector(`input[data-testid="datepicker"]`).value',
+    //   e.target.querySelector(`input[data-testid="datepicker"]`).value
+    // );
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
       email,
@@ -84,6 +103,7 @@ export default class NewBill {
   };
 
   // not need to cover this function by tests
+  /* istanbul ignore next */
   updateBill = (bill) => {
     if (this.store) {
       this.store
