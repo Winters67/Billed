@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { fireEvent, screen, waitFor } from "@testing-library/dom";
+import { screen, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 import BillsUI from "../views/BillsUI.js";
 import Bills from "../containers/Bills.js";
@@ -38,7 +38,7 @@ describe("Given I am connected as an employee", () => {
     test("fetches bills from mock API GET", async () => {
       localStorage.setItem(
         "user",
-        JSON.stringify({ type: "Admin", email: "a@a" })
+        JSON.stringify({ type: "admin", email: "a@a" })
       );
       const root = document.createElement("div");
       root.setAttribute("id", "root");
@@ -201,7 +201,5 @@ describe("Given I am a user connected as Employee", () => {
       document.body.appendChild(root);
       router();
     });
-
-   
   });
 });
