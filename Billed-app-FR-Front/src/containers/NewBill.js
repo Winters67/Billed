@@ -6,8 +6,8 @@ const checkFileExtension = function (e, filname) {
   let allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
   if (!allowedExtensions.test(filname)) {
     let erreur = "Seule les fichiers .jpg, .png .jepg sont autorisées";
-    e.target.value = "";
     document.querySelector(".msgError").textContent = erreur;
+    e.target.value = "";
     return false;
   } else return true;
 };
